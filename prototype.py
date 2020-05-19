@@ -66,8 +66,7 @@ def animate(frame):
     return A.move(), B.move() #for blitting alg
 
 anim = matplotlib.animation.FuncAnimation(fig, animate, frames=7000,
-                                          init_func=init, interval=1*TIME_STEP,
-                                          blit=True, repeat = False) #interval in millis
+                                          init_func=init, interval=1*TIME_STEP, repeat = False) #interval in millis
 #INCLUDE LINE BELOW TO SAVE
 #anim.save("orbit.mp4", fps=100)
 plt.show()
