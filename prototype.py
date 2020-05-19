@@ -5,9 +5,10 @@ import matplotlib
 import matplotlib.animation
 import matplotlib.pyplot as plt
 import matplotlib.patches as pat #shapes
+#%matplotlib qt - to be added somewhere
 
 
-TIME_STEP = 0.1 #time resolution in seconds
+TIME_STEP = 10 #time resolution in seconds
 G = 6.673e-11 #grav const, N m^2 kg^-2
 class PointMass(object): #Parent class for all objects. Do not instantiate directly
                          #rather, use one of its subclasses (either Large or Small)
@@ -49,7 +50,7 @@ class Small(PointMass): #variable v, no gravity
 fig = plt.figure(figsize=[8,8]) #set up figure
 ax1 = plt.axes(xlim=(-8e6, 8e6), ylim=(-8e6, 8e6) ) #set up first set of axes
 A = Large(mass=5e24, r=[0,0], v=[0, 0], R=6.38e6) #massive bod
-B = Small(mass=250, r=[0, 6.5e6], v=[7164, 0]) #petite lil satellite, moving at orbital v
+B = Small(mass=250, r=[0, 16.5e6], v=[7164, 0]) #petite lil satellite, moving at orbital v
 #plt.grid()
 
 def init():
@@ -66,7 +67,8 @@ def animate(frame):
     return A.move(), B.move() #for blitting alg
 
 anim = matplotlib.animation.FuncAnimation(fig, animate, frames=7000,
-                                          init_func=init, interval=1*TIME_STEP, repeat = False) #interval in millis
+                                          init_func=init, interval=1*TIME_STEP,
+                                          blit=True, repeat = False) #interval in millis - blit doesn't work on mac
 #INCLUDE LINE BELOW TO SAVE
 #anim.save("orbit.mp4", fps=100)
 plt.show()
