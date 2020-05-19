@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 13 16:28:18 2020
-
-@author: AlexanderSinclairTeixeira
-"""
 
 import scipy as sp
 #import scipy.integrate as itg
@@ -12,7 +6,7 @@ import matplotlib.animation
 import matplotlib.pyplot as plt
 import matplotlib.patches as pat #shapes
 
-#%%
+
 TIME_STEP = 0.1 #time resolution in seconds
 G = 6.673e-11 #grav const, N m^2 kg^-2
 class PointMass(object): #Parent class for all objects. Do not instantiate directly
@@ -51,7 +45,7 @@ class Small(PointMass): #variable v, no gravity
         ax1.add_patch(self.patch) #add to axes
         return self.patch #for animation func
 
-#%%
+
 fig = plt.figure(figsize=[8,8]) #set up figure
 ax1 = plt.axes(xlim=(-8e6, 8e6), ylim=(-8e6, 8e6) ) #set up first set of axes
 A = Large(mass=5e24, r=[0,0], v=[0, 0], R=6.38e6) #massive bod
