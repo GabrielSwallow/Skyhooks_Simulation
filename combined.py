@@ -27,7 +27,7 @@ def unitV(r1, r2): #unit vector from r1 to r2
     return sep / mag(r1, r2)
 
 
-class RigidBody(object): 
+class _RigidBody: 
     #Parent class for all objects. Do not instantiate directly, rather use 
     #one of its subclasses (either Large or Small)
     def __init__(self, mass, pos, vel, rad, theta, angV, pointFmt): #on start:
@@ -57,7 +57,7 @@ class RigidBody(object):
         return True if mag(self.pos, other.pos) <= self.rad else False
 
 
-class Large(RigidBody): #has gravity, fixed circular path
+class Large(_RigidBody): #has gravity, fixed circular path
 
     def __init__(self, mass, pos, vel, rad, theta, angV, pointFmt):
         super().__init__(mass, pos, vel, rad, theta, angV, pointFmt) #as above
@@ -79,7 +79,7 @@ class Large(RigidBody): #has gravity, fixed circular path
         return v * vHat
 
 
-class Small(RigidBody): #variable v, no gravity
+class Small(_RigidBody): #variable v, no gravity
 
     def __init__(self, mass, pos, vel, rad, theta, angV, pointFmt):
         super().__init__(mass, pos, vel, rad, theta, angV, pointFmt)
@@ -96,7 +96,7 @@ class Small(RigidBody): #variable v, no gravity
         rad = (self.rad ** 2 + other.rad ** 2) ** 0.5 #assuming equal densities
         L = self.I * self.angV + other.I * other.angV #sum of amgular momenta
         angV = L / (2 / 5 * mass * rad ** 2) #find new ang vel
-        return RigidBody(mass, pos, vel, rad, self.theta, angV) #returns class
+        return _RigidBody(mass, pos, vel, rad, self.theta, angV) #returns class
 
     def patchUpdate(self): #objects too small to see so vel shown
         ax2.patches.remove(self.patch)
