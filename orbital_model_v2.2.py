@@ -31,6 +31,7 @@ def g(Mass, Mass_pos, r): #test grav acceleration at r from mass at rMass
     g = - G * Mass / mag(Mass_pos, r)**2
     return g * unitV(Mass_pos, r)
 
+
 class _RigidBody:
     #Parent class for all objects. Do not instantiate directly, rather use
     #one of its subclasses (either Large or Small)
@@ -58,6 +59,7 @@ class _RigidBody:
         return 0.0 if mag(self.orbitPos(t), U[:2]) < self.rad else 1.0
     
     insideEvent.terminal = True
+
 
 class Large(_RigidBody): #has gravity, fixed circular/static path
 
