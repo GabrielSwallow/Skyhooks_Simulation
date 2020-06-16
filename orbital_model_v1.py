@@ -6,7 +6,6 @@ Created on Mon Jun  1 16:19:01 2020
 """
 
 import scipy as sp
-#import scipy.integrate as itg
 import matplotlib
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
@@ -27,8 +26,8 @@ def unitV(r1, r2): #unit vector from r1 to r2
     return sep / mag(r1, r2)
 
 
-class _RigidBody: 
-    #Parent class for all objects. Do not instantiate directly, rather use 
+class _RigidBody:
+    #Parent class for all objects. Do not instantiate directly, rather use
     #one of its subclasses (either Large or Small)
     def __init__(self, mass, pos, vel, rad, theta, angV, pointFmt): #on start:
         self.mass = mass
@@ -39,7 +38,7 @@ class _RigidBody:
         self.angV = angV #angular velocity, +ve is anticlockwise
         self.I = 2 / 5 * self.mass * self.rad ** 2 #sphere moment of inertia
         #should this be of a thin disc or a circle instead?!?
-        self.patch = pat.Circle(xy=self.pos, radius=self.rad, alpha=0.3) 
+        self.patch = pat.Circle(xy=self.pos, radius=self.rad, alpha=0.3)
         #circles are nice, default, hitbox
         self.point, = ax1.plot(self.pos[0], self.pos[1], pointFmt)
 
@@ -67,10 +66,10 @@ class Large(_RigidBody): #has gravity, fixed circular path
         return self.patch
 
     def g(self, r): #gravitational field strength at vector r
-        g = - G * self.mass / mag(self.pos, r)**2 #-GM/R^2 
+        g = - G * self.mass / mag(self.pos, r)**2 #-GM/R^2
         return g * unitV(self.pos, r) #with direction
 
-    def circular(self, r, antiCW): 
+    def circular(self, r, antiCW):
         #velocity for a circular orbit around body at vector r
         #Anticlockwise is default, enter -1 for clockwise
         v = sp.sqrt(G * self.mass / mag(self.pos, r)) #mag of vel v=(GM/R)^0.5
@@ -83,8 +82,8 @@ class Small(_RigidBody): #variable v, no gravity
 
     def __init__(self, mass, pos, vel, rad, theta, angV, pointFmt):
         super().__init__(mass, pos, vel, rad, theta, angV, pointFmt)
-        self.patch = pat.Arrow(self.pos[0], self.pos[1], 
-                               1e4*self.vel[0], 1e4*self.vel[1], 
+        self.patch = pat.Arrow(self.pos[0], self.pos[1],
+                               1e4*self.vel[0], 1e4*self.vel[1],
                                width=lim2/50) #position at tail of arrow
         self.a = sp.array([0,0]) #initialise acceleration
 
@@ -117,13 +116,13 @@ fig.tight_layout()
 t = 0.0
 
 #%%
-Sun = Large(mass=1.989e30, pos=[0,0], vel=[0,0], rad=6.963e8, 
+Sun = Large(mass=1.989e30, pos=[0,0], vel=[0,0], rad=6.963e8,
             theta=0, angV=0, pointFmt=".y")
-Earth = Large(mass=5.972e24, pos=[1.496e11,0], vel=[0,0], rad=6.37e6, 
+Earth = Large(mass=5.972e24, pos=[1.496e11,0], vel=[0,0], rad=6.37e6,
               theta=0, angV=2*sp.pi/60/60/24, pointFmt=".b") #24 hour day
-Mars = Large(mass=6.39e23, pos=[-2.289e11, 0], vel=[0,0], rad=3.389e6, 
+Mars = Large(mass=6.39e23, pos=[-2.289e11, 0], vel=[0,0], rad=3.389e6,
              theta=0, angV=2*sp.pi/60/60/(24+2/3), pointFmt=".r") #24h40min day
-Demo2 = Small(mass=1.5e4, pos=[1.496086e11, 0], vel=[-2e3,3.7e4], rad=6, 
+Demo2 = Small(mass=1.5e4, pos=[1.496086e11, 0], vel=[-2e3,3.7e4], rad=6,
               theta=0, angV=0, pointFmt="xg") #mid earth orbit: 2230km
 LargeList = [Sun, Earth, Mars]
 SmallList = [Demo2]
@@ -156,10 +155,9 @@ def animate(frame):
     return (Sun.point, *Earth.move(), *Mars.move(), *Demo2.move())
 
 #%%
-anim = FuncAnimation(fig, animate, frames=FRAMES, 
-                     init_func=init, interval=INTERVAL, 
+anim = FuncAnimation(fig, animate, frames=FRAMES,
+                     init_func=init, interval=INTERVAL,
                      repeat=False, blit=True)
 
 #init()
 fig.show()
-
