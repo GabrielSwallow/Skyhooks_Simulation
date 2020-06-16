@@ -2,7 +2,7 @@
 """
 Created on Sat Jun  6 17:38:49 2020
 
-@author: alesi
+@author: AlexanderSinclairTeixeira
 """
 
 import scipy as sp
@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as pat #shapes
 
 #%% TIME_STEP=2 gives drastically different results?!?
-TIME_STEP = 1 #time resolution in seconds
-FRAMES=2000 #num frames in animation
-INTERVAL=10 #millis between each frame in animation
+TIME_STEP = 1  #time resolution in seconds
+FRAMES=10000 #num frames in animation
+INTERVAL=25 #millis between each frame in animation
 t = sp.linspace(0.0, TIME_STEP * (FRAMES - 1), num = FRAMES)
 G = 6.673e-11 #grav const, N m^2 kg^-2
 zHat = sp.array([0,0,1]) #unit vector lol
@@ -31,8 +31,8 @@ def g(Mass, rMass, r): #test grav acceleration at r from mass at rMass
     return g * unitV(rMass, r)
 
 
-class RigidBody(object): 
-    #Parent class for all objects. Do not instantiate directly, rather use 
+class _RigidBody:
+    #Parent class for all objects. Do not instantiate directly, rather use
     #one of its subclasses (either Large or Small)
     def __init__(self, mass, pos, rad, pointFmt): #on start:
         self.mass = mass
@@ -53,7 +53,7 @@ class RigidBody(object):
         return [self.patchUpdate(), self.pointUpdate()]
 
 
-class Large(RigidBody): #has gravity, fixed circular/static path 
+class Large(_RigidBody): #has gravity, fixed circular/static path
 
     def __init__(self, mass, rad, orbitR, theta, pointFmt):
         self.orbitR = orbitR #orbital radius
@@ -75,7 +75,7 @@ class Large(RigidBody): #has gravity, fixed circular/static path
         return self.patch
 
     def gravFS(self, r): #grav field strength at r from THIS BODY
-        g = - G * self.mass / mag(self.pos, r)**2 #-GM/R^2 
+        g = - G * self.mass / mag(self.pos, r)**2 #-GM/R^2
         return g * unitV(self.pos, r) #with direction
         #repeated function.... take this one out?
 
@@ -93,15 +93,15 @@ class Large(RigidBody): #has gravity, fixed circular/static path
         return sp.array([x,y])
 
 
-class Small(RigidBody): #variable v, no gravity
+class Small(_RigidBody): #variable v, no gravity
 
     def __init__(self, mass, pos, vel, rad, angle, angV, pointFmt):
         super().__init__(mass, pos, rad, pointFmt)
         self.vel = sp.array(vel) #vel vector
         self.angle = angle #angle from local +ve x-axis, radians
         self.angV = angV #angular velocity, radians per second
-        self.patch = pat.Arrow(self.pos[0], self.pos[1], 
-                               1e4*self.vel[0], 1e4*self.vel[1], 
+        self.patch = pat.Arrow(self.pos[0], self.pos[1],
+                               1e4*self.vel[0], 1e4*self.vel[1],
                                width=lim2/50) #position at tail of arrow
         self.a = sp.array([0,0]) #initialise acceleration
         self.pointB, = ax2.plot(self.pos[0], self.pos[1], pointFmt)
@@ -130,14 +130,14 @@ class Small(RigidBody): #variable v, no gravity
         ax2.add_patch(self.patch) #add to axes
         return self.patch #for animation func
 
-    
+
 #%% put into function?
 fig = plt.figure(figsize=[16,8])
 lim1 = 2.5e11
 ax1 = fig.add_subplot(121, xlim=(-lim1, lim1), ylim=(-lim1, lim1))
 lim2 = 6e6
 ax2 = fig.add_subplot(122, xlim=(-lim2, lim2), ylim=(-lim2, lim2))
-fig.tight_layout()
+#fig.tight_layout()
 
 #%% put into function?
 Sun = Large(mass=1.989e30, rad=6.963e8, orbitR=0.0,
@@ -146,7 +146,7 @@ Earth = Large(mass=5.972e24, rad=6.37e6, orbitR=1.496e11,
               theta=0, pointFmt=".b") #24 hour day
 Mars = Large(mass=6.39e23, rad=3.389e6, orbitR=2.289e11,
              theta=sp.pi/2, pointFmt=".r") #24h40min day
-Demo2 = Small(mass=1.5e4, pos=[1.496086e11, 10], vel=[-2e3,3.7e4], rad=20, 
+Demo2 = Small(mass=1.5e4, pos=[1.496086e11, 10], vel=[-2e3,3.7e4], rad=20,
               angle=0, angV=0, pointFmt="xg") #mid earth orbit: 2230km
 LargeList = [Sun, Earth, Mars] #sun MUST be first
 SmallList = [Demo2]
@@ -162,9 +162,9 @@ def dU_dt(t, U): #vector U = (x, y, xdot, ydot)
     # returns Udot = (xdot, ydot, xdotdot, ydotdot)
     return (*U[2:], *gSum(t, U[:2]))
 
-path = spi.solve_ivp(dU_dt, t_span=(t[0], t[-1]),
-                     y0=(*Demo2.pos, *Demo2.vel), t_eval=t, max_step=3600,
-                     atol=(1e-1,1e-1, 1e-3, 1e-3), dense_output=True)
+path = spi.solve_ivp(dU_dt, t_span=(t[0], t[-1]), dense_output=True,
+                     y0=(*Demo2.pos, *Demo2.vel), max_step=600,
+                     atol=(1e-2,1e-2, 1e-4, 1e-4), t_eval=t )
 
 #%%
 def focus(body): #centre axis on body (or reset box)
@@ -200,15 +200,11 @@ def animate(frame):
     focus(Demo2)
     return tuple(updated)
 
-#%%
 if path.success:
-    anim = FuncAnimation(fig, animate, frames=len(t), 
-                         init_func=init, interval=INTERVAL, 
+    anim = FuncAnimation(fig, animate, frames=len(t),
+                         init_func=init, interval=INTERVAL,
                          repeat=False, blit=True)
     fig.show()
 else:
     plt.plot(t, path.sol(t)[0])
     plt.plot(t, path.sol(t)[1])
-
-
-#init()
