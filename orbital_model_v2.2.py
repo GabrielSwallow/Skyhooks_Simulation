@@ -14,8 +14,7 @@ import matplotlib.patches as pat #shapes
 TIME_STEP = 20 #time resolution in seconds
 FRAMES=5000 #num frames in animation
 FRAME_RATE = 100
-INTERVAL=10e3/FRAME_RATE
-INTERVAL=10 #millis between each frame in animation
+INTERVAL=10e3/FRAME_RATE #millis between each frame in animation
 t = sp.linspace(0.0, TIME_STEP * (FRAMES - 1), num = FRAMES)
 G = 6.673e-11 #grav const, N m^2 kg^-2
 zHat = sp.array([0,0,1]) #unit vector lol
