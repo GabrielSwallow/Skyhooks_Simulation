@@ -5,7 +5,7 @@ Created on Sun Jun 21 02:16:51 2020
 @author: alesi
 """
 
-import timeit
+#import timeit
 import scipy as sp
 import scipy.integrate as spi
 from numpy.core.umath_tests import inner1d
